@@ -1,10 +1,7 @@
 name: Release
 
 on:
-  workflow_dispatch: 
-  push:
-    tags:
-      - "*"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -29,47 +26,8 @@ jobs:
           CARGO_PROFILE_RELEASE_LTO: "fat"
           CARGO_PROFILE_RELEASE_STRIP: "symbols"
           CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
-      - name: Build Changelog
-        id: github_release
-        uses: mikepenz/release-changelog-builder-action@v4
-        with:
-          commitMode: true
-          configurationJson: |
-            {
-              "template": "#{{CHANGELOG}}",
-              "categories": [
-                {
-                    "title": "## Feature",
-                    "labels": ["feat", "feature"]
-                },
-                {
-                    "title": "## Fix",
-                    "labels": ["fix", "bug"]
-                },
-
-                {
-                    "title": "## Chore",
-                    "labels": ["chore"]
-                }
-                {
-                    "title": "## Other",
-                    "labels": []
-                }
-              ],
-              "label_extractor": [
-                {
-                  "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
-                  "target": "$1"
-                }
-              ],
-            }
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Prepare lib for release
-        run: mv target/${{ matrix.target }}/githubci/libmtbinloader2.so libmtbinloader2_${{ matrix.target }}.so
-      - name: Create Release
-        uses: mikepenz/action-gh-release@v0.2.0-a03 #softprops/action-gh-release
-        with:
-          body: ${{steps.github_release.outputs.changelog}}
-          files: libmtbinloader2_${{ matrix.target }}.so
+        run: |
+          gh release create "ok" "target/${{ matrix.target }}/githubci/libmtbinloader2.so"
 
