@@ -21,15 +21,20 @@ jobs:
         with:
           target: ${{ matrix.target }} 
       - name: build
-        run: cargo build --profile githubci
-        env:
-          CARGO_PROFILE_RELEASE_LTO: "fat"
-          CARGO_PROFILE_RELEASE_STRIP: "symbols"
-          CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
+        run: cargo build --profile release
+        # env:
+        #   CARGO_PROFILE_RELEASE_LTO: "fat"
+        #   CARGO_PROFILE_RELEASE_STRIP: "symbols"
+        #   CARGO_PROFILE_RELEASE_CODEGEN_UNITS: 1
           
       - name: Prepare lib for release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "ok" "target/${{ matrix.target }}/githubci/libmtbinloader2.so"
+        # env:
+        #   GH_TOKEN: ${{ github.token }}
+        # run: |
+        #   gh release create "ok" "target/${{ matrix.target }}/githubci/libmtbinloader2.so"
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: "libmtbinloader2"
+          path: "target/${{ matrix.target }}/release/libmtbinloader2.so"
+          compression-level: 0
 
